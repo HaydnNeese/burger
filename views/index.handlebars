@@ -1,0 +1,76 @@
+<div class="container">
+    <h1 class="text-center">Welcome to Goodburger, Home of the Goodburger</h1>
+    <h2 class="text-center">May We Take Your Order?</h2>
+</div>
+
+<div class="container text-center">
+
+    <div class="row">
+        <div class="col-4">
+            <h3>Burger Menu</h3>
+            <ul>
+                {{#each burger}}
+                {{#unless this.devoured}}
+                <li>
+                    <p>{{this.burger_name}} <button class="eat-burger" data-id="{{this.id}}">Devour</button></p>
+                </li>
+                {{/unless}}
+                {{/each}}
+            </ul>
+        </div>
+        <div class="col-4">
+            <form>
+                <div class="form-group">
+                    <label for="new-burger">Add a burger to the menu</label>
+                    <input type="burger" class="form-control" id="new-burger" aria-describedby="burger-help"
+                        placeholder="Enter Burger Name">
+                    <small id="burger-help" class="form-text text-muted">Type in the name of a burger to add it to the menu.</small>
+                </div>
+                <button type="submit" class="btn btn-primary" id="submit">Submit</button>
+            </form>
+        </div>
+        <div class="col-4">
+            <h3>Devoured</h3>
+            <ul>
+                {{#each burger}}
+                {{#if this.devoured}}
+                <li>
+                    <p>{{this.burger_name}}</p>
+                </li>
+                {{/if}}
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#submit").on("click", function (event) {
+        event.preventDefault();
+
+        var newBurger = {
+            burger_name: $("#new-burger").val().trim(),
+            devoured: 0
+        };
+
+        $.ajax("/api/burger", {
+            type: "POST",
+            data: newBurger
+        }).then(function() {
+            location.reload();
+        });
+    });
+
+    $(".eat-burger").on("click", function() {
+        var id = $(this).data("id");
+
+        var eaten = {devoured: 1};
+
+        $.ajax("/api/burger/" + id, {
+            type: "PUT",
+            data: eaten
+        }).then(function () {
+            location.reload();
+        })
+    });
+</script>
